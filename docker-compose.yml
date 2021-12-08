@@ -10,9 +10,9 @@ services:
       - ./db/my.cnf:/etc/mysql/conf.d/my.cnf
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: laravel
-      MYSQL_USER: root
-      MYSQL_PASSWORD: root
+      MYSQL_DATABASE: youtube-todo
+      MYSQL_USER: docker
+      MYSQL_PASSWORD: docker
       TZ: "Asia/Tokyo"
     #GUI形式でDBを管理する為のポートを指定(例phpmyadmin) ※ポート番号は重複しないように
     ports:
