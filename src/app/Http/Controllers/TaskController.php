@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreTaskRequest;
-use App\Http\Requests\UpdateTaskRequest;
+use App\Http\Requests\TaskRequest;
+use Illuminate\Http\Request;
 use App\Models\Task;
 
 class TaskController extends Controller
@@ -20,14 +20,20 @@ class TaskController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
+     * 登録処理
      *
-     * @param  \App\Http\Requests\StoreTaskRequest  $request
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return void
      */
-    public function store(StoreTaskRequest $request)
+    public function store(TaskRequest $request)
     {
-        //
+        $task = Task::create($request->all());
+
+        // 登録成功時は、正常ステータスコード201、失敗した場合は、ステータスコード500を返す
+        return $task 
+            ? response()->json($task,201)
+            :response()->json([],500);
+
     }
 
     /**
@@ -43,25 +49,33 @@ class TaskController extends Controller
 
 
     /**
-     * Update the specified resource in storage.
+     * 更新処理
      *
-     * @param  \App\Http\Requests\UpdateTaskRequest  $request
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @param Task $task
+     * @return void
      */
-    public function update(UpdateTaskRequest $request, Task $task)
+    public function update(TaskRequest $request, Task $task)
     {
-        //
+        $task->title = $request->title;
+
+        // 更新成功時は、デフォルトでステータスコード207を返却し、失敗時はステータスコード500を返す
+        return $task->update() 
+            ? response()->json($task) 
+            : response()->json([],500);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * 削除処理
      *
-     * @param  \App\Models\Task  $task
-     * @return \Illuminate\Http\Response
+     * @param Task $task
+     * @return void
      */
     public function destroy(Task $task)
     {
-        //
+        // 更新成功時は、デフォルトでステータスコード207を返却し、失敗時はステータスコード500を返す
+        return $task->delete() 
+            ? response()->json($task) 
+            : response()->json([],500);
     }
 }
