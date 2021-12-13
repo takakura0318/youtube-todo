@@ -53,7 +53,7 @@ class TaskController extends Controller
      *
      * @param Request $request
      * @param Task $task
-     * @return void
+     * @return 
      */
     public function update(TaskRequest $request, Task $task)
     {
@@ -66,16 +66,34 @@ class TaskController extends Controller
     }
 
     /**
+     * is_doneの更新
+     *
+     * @param Task $task
+     * @param Request $request
+     * @return 
+     */
+    public function updateDone(Task $task,Request $request)
+    {
+        abort(500);
+        $task->is_done = $request->is_done;
+
+        return $task->update()
+            ? response()->json($task)
+            : response()->json([],500);
+    }
+
+    /**
      * 削除処理
      *
      * @param Task $task
-     * @return void
+     * @return 
      */
     public function destroy(Task $task)
     {
-        // 更新成功時は、デフォルトでステータスコード207を返却し、失敗時はステータスコード500を返す
         return $task->delete() 
             ? response()->json($task) 
             : response()->json([],500);
     }
+
+
 }

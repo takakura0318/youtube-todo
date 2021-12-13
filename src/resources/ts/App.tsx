@@ -1,8 +1,12 @@
 import React from "react";
 import { Router } from "./router";
-// React Queryをインポート
+// React-Queryをインポート
 // https://zenn.dev/brachio_takumi/articles/20210226-react-query
 import { QueryClient, QueryClientProvider } from "react-query";
+// React-Toastifyをインポート
+// https://github.com/fkhadra/react-toastify
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export const App = () => {
     // React Queryの初期設定
@@ -22,6 +26,8 @@ export const App = () => {
     return (
         <QueryClientProvider client={queryClient}>
             <Router />
+            {/* React-Toastify:サーバー側でエラーが起こった場合にエラー表示するライブラリ。オプションでプログレスバーをtrueにする  */}
+            <ToastContainer hideProgressBar={true} />
         </QueryClientProvider>
     );
 };

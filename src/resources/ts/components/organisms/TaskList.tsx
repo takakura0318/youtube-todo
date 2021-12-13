@@ -18,7 +18,7 @@ export const TaskList: VFC = memo(() => {
     }, []);
      */
 
-    // Task一覧を取得する
+    // Task一覧を取得する(react-queryによって1回だけ実行される)
     const { data: tasks, status } = useTasks();
 
     if (status === "loading") {

@@ -1,4 +1,6 @@
 import React, { VFC, memo } from "react";
+//
+import { useUpdateDoneTask } from "../../queries/TaskQuery";
 import { Task } from "../../types/Task";
 
 type Props = {
@@ -7,10 +9,23 @@ type Props = {
 
 export const TaskItem: VFC<Props> = memo((props) => {
     const { task } = props;
+    // is_done更新処理Qury ※必ず変数に格納すること
+    const updateDoneTask = useUpdateDoneTask();
+
+    // チェックボックスにチェックされたら
+    const onClickUpdateDoneTask = () => {
+        // is_done更新を更新する(Task完了状態を切り替える)
+        updateDoneTask.mutate(task);
+    };
     return (
-        <li key={task.id}>
+        // タスク状態がtrueの場合は、チェックをつけるスタイルにする
+        <li className={task.is_done ? "done" : ""}>
             <label className="checkbox-label">
-                <input type="checkbox" className="checkbox-input" />
+                <input
+                    type="checkbox"
+                    className="checkbox-input"
+                    onClick={onClickUpdateDoneTask}
+                />
             </label>
             <div>
                 <span>{task.title}</span>
