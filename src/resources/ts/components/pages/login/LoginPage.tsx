@@ -1,7 +1,7 @@
 import React from "react";
 import { memo, VFC } from "react";
 
-export const Login: VFC = memo(() => {
+export const LoginPage: VFC = memo(() => {
     return (
         <div className="login-page">
             <div className="login-panel">

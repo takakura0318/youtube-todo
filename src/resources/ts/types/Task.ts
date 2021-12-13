@@ -1,5 +1,5 @@
 // apiの型を指定
-export type TaskType = {
+export type Task = {
     id: number;
     title: string;
     is_done: boolean;

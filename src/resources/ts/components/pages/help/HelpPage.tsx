@@ -1,7 +1,7 @@
 import React from "react";
 import { memo, VFC } from "react";
 
-export const Help: VFC = memo(() => {
+export const HelpPage: VFC = memo(() => {
     return (
         <div className="align-center">
             <h1>ヘルプです</h1>

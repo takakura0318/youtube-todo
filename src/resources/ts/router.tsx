@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
-import { Help } from "./pages/help/help";
-import { Login } from "./pages/login/Login";
-import { Task } from "./pages/tasks/Task";
+import { HelpPage } from "./components/pages/help/HelpPage";
+import { LoginPage } from "./components/pages/login/LoginPage";
+import { TaskPage } from "./components/pages/tasks/TaskPage";
 
 export const Router = () => {
     return (
@@ -28,16 +28,16 @@ export const Router = () => {
                 </header>
 
                 {/* A <Switch> looks through its children <Route>s and
-            renders the first one that matches the current URL. */}
+                renders the first one that matches the current URL. */}
                 <Switch>
                     <Route path="/" exact>
-                        <Task />
+                        <TaskPage />
                     </Route>
                     <Route path="/help">
-                        <Help />
+                        <HelpPage />
                     </Route>
                     <Route path="/login">
-                        <Login />
+                        <LoginPage />
                     </Route>
                 </Switch>
             </div>
