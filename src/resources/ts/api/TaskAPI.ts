@@ -18,10 +18,26 @@ export const updateDoneTask = async (props: Task) => {
     const { id, is_done } = props;
 
     // axios.patch()の第1引数に「APIのroute」、第2引数に「APIに送信したいデータ」
-    const { data } = await axios.patch<Array<Task>>(
+    const { data } = await axios.patch<Task>(
         `api/tasks/update-done/${id}`,
         // 現在のタスク状態の反対真偽値をAPIに送信する
         { is_done: !is_done }
+    );
+    return data;
+};
+
+/**
+ * Taskのタイトル登録API
+ * @returns Task
+ */
+export const createTask = async (props: string) => {
+    const title = props;
+
+    // axios.post()の第1引数に「APIのroute」、第2引数に「APIに送信したいデータ」
+    const { data } = await axios.post<Task>(
+        `api/tasks`,
+        // タイトル
+        { title: title }
     );
     return data;
 };

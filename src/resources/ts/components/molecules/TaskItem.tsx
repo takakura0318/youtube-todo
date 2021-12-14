@@ -14,7 +14,7 @@ export const TaskItem: VFC<Props> = memo((props) => {
 
     // チェックボックスにチェックされたら
     const onClickUpdateDoneTask = () => {
-        // is_done更新を更新する(Task完了状態を切り替える)
+        // is_doneを更新処理(Task完了状態を切り替える)
         updateDoneTask.mutate(task);
     };
     return (
