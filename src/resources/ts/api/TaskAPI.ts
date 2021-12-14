@@ -41,3 +41,25 @@ export const createTask = async (props: string) => {
     );
     return data;
 };
+
+/**
+ * Task編集API
+ * @returns Task
+ */
+export const updateTask = async ({ id, task }: { id: number; task: Task }) => {
+    const { data } = await axios.put<Task>(
+        `api/tasks/${id}`,
+        // タイトル
+        task
+    );
+    return data;
+};
+
+/**
+ * Task削除API
+ * @returns Task
+ */
+export const deleteTask = async (id: number) => {
+    const { data } = await axios.delete<Task>(`api/tasks/${id}`);
+    return data;
+};

@@ -2274,7 +2274,7 @@ var __importDefault = this && this.__importDefault || function (mod) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.createTask = exports.updateDoneTask = exports.getTasks = void 0;
+exports.deleteTask = exports.updateTask = exports.createTask = exports.updateDoneTask = exports.getTasks = void 0;
 
 var axios_1 = __importDefault(__webpack_require__(/*! axios */ "./node_modules/axios/index.js"));
 /**
@@ -2364,6 +2364,61 @@ var createTask = function createTask(props) {
 };
 
 exports.createTask = createTask;
+/**
+ * Task編集API
+ * @returns Task
+ */
+
+var updateTask = function updateTask(_a) {
+  var id = _a.id,
+      task = _a.task;
+  return __awaiter(void 0, void 0, void 0, function () {
+    var data;
+    return __generator(this, function (_b) {
+      switch (_b.label) {
+        case 0:
+          return [4
+          /*yield*/
+          , axios_1["default"].put("api/tasks/".concat(id), // タイトル
+          task)];
+
+        case 1:
+          data = _b.sent().data;
+          return [2
+          /*return*/
+          , data];
+      }
+    });
+  });
+};
+
+exports.updateTask = updateTask;
+/**
+ * Task削除API
+ * @returns Task
+ */
+
+var deleteTask = function deleteTask(id) {
+  return __awaiter(void 0, void 0, void 0, function () {
+    var data;
+    return __generator(this, function (_a) {
+      switch (_a.label) {
+        case 0:
+          return [4
+          /*yield*/
+          , axios_1["default"]["delete"]("api/tasks/".concat(id))];
+
+        case 1:
+          data = _a.sent().data;
+          return [2
+          /*return*/
+          , data];
+      }
+    });
+  });
+};
+
+exports.deleteTask = deleteTask;
 
 /***/ }),
 
@@ -2467,6 +2522,22 @@ exports.TaskInput = (0, react_1.memo)(function () {
 "use strict";
 
 
+var __assign = this && this.__assign || function () {
+  __assign = Object.assign || function (t) {
+    for (var s, i = 1, n = arguments.length; i < n; i++) {
+      s = arguments[i];
+
+      for (var p in s) {
+        if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
+      }
+    }
+
+    return t;
+  };
+
+  return __assign.apply(this, arguments);
+};
+
 var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
   if (k2 === undefined) k2 = k;
   Object.defineProperty(o, k2, {
@@ -2506,19 +2577,98 @@ Object.defineProperty(exports, "__esModule", ({
 }));
 exports.TaskItem = void 0;
 
-var react_1 = __importStar(__webpack_require__(/*! react */ "./node_modules/react/index.js")); //
+var react_1 = __importStar(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+
+var react_toastify_1 = __webpack_require__(/*! react-toastify */ "./node_modules/react-toastify/dist/react-toastify.esm.js"); //
 
 
 var TaskQuery_1 = __webpack_require__(/*! ../../queries/TaskQuery */ "./resources/ts/queries/TaskQuery.ts");
 
 exports.TaskItem = (0, react_1.memo)(function (props) {
-  var task = props.task; // is_done更新処理Qury ※必ず変数に格納すること
+  var task = props.task; // 更新用切り替えFlagを保持するState ※undefinedはなにかに置き換えできるかも
 
-  var updateDoneTask = (0, TaskQuery_1.useUpdateDoneTask)(); // チェックボックスにチェックされたら
+  var _a = (0, react_1.useState)(undefined),
+      editTitle = _a[0],
+      setEditTitle = _a[1]; // is_done更新処理Qury ※必ず変数に格納すること
+
+
+  var updateDoneTask = (0, TaskQuery_1.useUpdateDoneTask)(); // Task編集Query ※必ず変数に格納すること
+
+  var updateTask = (0, TaskQuery_1.useUpdateTask)(); // Task削除Query
+
+  var deleteTask = (0, TaskQuery_1.useDeleteTask)(); // 【切替用】①タイトル表示と削除ボタン
+
+  var itemText = function itemText() {
+    return react_1["default"].createElement(react_1["default"].Fragment, null, react_1["default"].createElement("div", {
+      onClick: handleToggleEdit
+    }, react_1["default"].createElement("span", null, task.title)), react_1["default"].createElement("button", {
+      className: "btn is-delete",
+      onClick: function onClick() {
+        return deleteTask.mutate(task.id);
+      }
+    }, "\u524A\u9664"));
+  }; // 【切替用】②更新用inputタグ
+
+
+  var itemInput = function itemInput() {
+    return react_1["default"].createElement(react_1["default"].Fragment, null, react_1["default"].createElement("form", {
+      onSubmit: handleUpdate
+    }, react_1["default"].createElement("input", {
+      type: "text",
+      className: "input",
+      defaultValue: editTitle,
+      onKeyDown: handleOnkey,
+      onChange: handleInputChange
+    })), react_1["default"].createElement("button", {
+      className: "btn",
+      onClick: handleUpdate
+    }, "\u66F4\u65B0"));
+  }; // チェックボックスにチェックされたら
+
 
   var onClickUpdateDoneTask = function onClickUpdateDoneTask() {
     // is_doneを更新処理(Task完了状態を切り替える)
     updateDoneTask.mutate(task);
+  }; // ①➔②に切り替えるハンドラー
+
+
+  var handleToggleEdit = function handleToggleEdit() {
+    setEditTitle(task.title);
+  }; // ②➔①に切り替えるハンドラー
+
+
+  var handleOnkey = function handleOnkey(e) {
+    // esc か Tab キーが押されたら
+    if (["Escape", "Tab"].includes(e.key)) {
+      setEditTitle(undefined);
+    }
+  }; // ②の入力値を保持する関数
+
+
+  var handleInputChange = function handleInputChange(e) {
+    setEditTitle(e.target.value);
+  }; // ②の更新ボタンが押されたら更新処理
+
+
+  var handleUpdate = function handleUpdate(e) {
+    // 処理を止める
+    e.preventDefault(); // editTitleがundefinedなら
+
+    if (!editTitle) {
+      react_toastify_1.toast.error("タイトルを入力してください");
+      return;
+    }
+
+    var newTask = __assign({}, task);
+
+    newTask.title = editTitle; // 編集処理実行
+
+    updateTask.mutate({
+      id: task.id,
+      task: newTask
+    }); // ①に切り替える
+
+    setEditTitle(undefined);
   };
 
   return (// タスク状態がtrueの場合は、チェックをつけるスタイルにする
@@ -2530,9 +2680,7 @@ exports.TaskItem = (0, react_1.memo)(function (props) {
       type: "checkbox",
       className: "checkbox-input",
       onClick: onClickUpdateDoneTask
-    })), react_1["default"].createElement("div", null, react_1["default"].createElement("span", null, task.title)), react_1["default"].createElement("button", {
-      className: "btn is-delete"
-    }, "\u524A\u9664"))
+    })), editTitle === undefined ? itemText() : itemInput())
   );
 });
 
@@ -2899,7 +3047,7 @@ var __importStar = this && this.__importStar || function (mod) {
 Object.defineProperty(exports, "__esModule", ({
   value: true
 }));
-exports.useCreateTask = exports.useUpdateDoneTask = exports.useTasks = void 0;
+exports.useDeleteTask = exports.useUpdateTask = exports.useCreateTask = exports.useUpdateDoneTask = exports.useTasks = void 0;
 
 var react_query_1 = __webpack_require__(/*! react-query */ "./node_modules/react-query/es/index.js");
 
@@ -2908,7 +3056,7 @@ var react_toastify_1 = __webpack_require__(/*! react-toastify */ "./node_modules
 
 var api = __importStar(__webpack_require__(/*! ../api/TaskAPI */ "./resources/ts/api/TaskAPI.ts"));
 /**
- * Task一覧取得
+ * Task一覧取得Query
  * @returns Task一覧
  */
 
@@ -2921,7 +3069,7 @@ var useTasks = function useTasks() {
 
 exports.useTasks = useTasks;
 /**
- * is_done更新処理
+ * is_done更新Query
  * @returns Task
  */
 
@@ -2942,7 +3090,7 @@ var useUpdateDoneTask = function useUpdateDoneTask() {
 
 exports.useUpdateDoneTask = useUpdateDoneTask;
 /**
- * Task-タイトル登録処理
+ * Task-タイトル登録Query
  * @returns Task
  */
 
@@ -2954,7 +3102,7 @@ var useCreateTask = function useCreateTask() {
     onSuccess: function onSuccess() {
       // Task一覧取得画面を再描画する
       queryClient.invalidateQueries("tasks");
-      react_toastify_1.toast.success("登録に失敗しました。");
+      react_toastify_1.toast.success("登録に成功しました。");
     },
     onError: function onError(error) {
       var _a, _b; // laravelのバリデーションエラーの場合(複数エラーに対応済み)
@@ -2976,6 +3124,63 @@ var useCreateTask = function useCreateTask() {
 };
 
 exports.useCreateTask = useCreateTask;
+/**
+ * Task編集Query
+ * @returns Task
+ */
+
+var useUpdateTask = function useUpdateTask() {
+  var queryClient = (0, react_query_1.useQueryClient)(); // useMutation()の第1引数には「呼び出すAPI」、第2引数に「コールバック処理」
+
+  return (0, react_query_1.useMutation)(api.updateTask, {
+    // 更新成功時は
+    onSuccess: function onSuccess() {
+      // Task一覧取得画面を再描画する
+      queryClient.invalidateQueries("tasks");
+      react_toastify_1.toast.success("更新に成功しました。");
+    },
+    onError: function onError(error) {
+      var _a, _b; // laravelのバリデーションエラーの場合(複数エラーに対応済み)
+
+
+      if ((_a = error.response) === null || _a === void 0 ? void 0 : _a.data.errors) {
+        //console.log(error.response?.data);
+        Object.values((_b = error.response) === null || _b === void 0 ? void 0 : _b.data.errors).map(function (messages) {
+          messages.map(function (message) {
+            react_toastify_1.toast.error(message);
+          });
+        });
+      } else {
+        // バリデーション以外のエラーの場合
+        react_toastify_1.toast.error("更新に失敗しました。");
+      }
+    }
+  });
+};
+
+exports.useUpdateTask = useUpdateTask;
+/**
+ * Task削除Query
+ * @returns Task
+ */
+
+var useDeleteTask = function useDeleteTask() {
+  var queryClient = (0, react_query_1.useQueryClient)(); // useMutation()の第1引数には「呼び出すAPI」、第2引数に「コールバック処理」
+
+  return (0, react_query_1.useMutation)(api.deleteTask, {
+    // 更新成功時は
+    onSuccess: function onSuccess() {
+      // Task一覧取得画面を再描画する
+      queryClient.invalidateQueries("tasks");
+      react_toastify_1.toast.success("削除に成功しました。");
+    },
+    onError: function onError() {
+      react_toastify_1.toast.error("削除に失敗しました。");
+    }
+  });
+};
+
+exports.useDeleteTask = useDeleteTask;
 
 /***/ }),
 
