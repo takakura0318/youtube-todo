@@ -2,14 +2,38 @@
 
 namespace Tests\Feature;
 
-use App\Models\Task;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use App\Models\Task;
+use App\Models\User;
+use Laravel\Sanctum\Sanctum;
 use Tests\TestCase;
 
+/**
+ * テスト実行コマンド
+ * 「php artisan test tests/Feature/TaskTest.php」
+ */
 class TaskTest extends TestCase
 {
     /** テスト実行時後はDBをリフレッシュする */
     use RefreshDatabase;
+
+    /**
+     * テストコードが実行される前に1回だけ実行されるメソッド
+     *
+     * @return void
+     */
+    public function setUp():void
+    {
+        parent::setUp();
+
+        // 【備忘録】下記コメントはyoutube#15 と同じ書き方だとエラーとなる。公式ドキュメントからソースを持ってくる
+        // $user=User::factory()->create();
+        // $this->actingAs($user);
+
+        // ユーザーを1件生成して、そのユーザーを認証済みとする
+        // Sactumは、APIの認証テストをするのに便利なライブラリ
+        Sanctum::actingAs(User::factory()->create());
+    }
 
     /**
      * @test
@@ -90,6 +114,7 @@ class TaskTest extends TestCase
 
     /**
      * @test
+     * php artisan test tests/Feature/TaskTest.php --filter=削除することができる 
      */
     public function 削除することができる()
     {

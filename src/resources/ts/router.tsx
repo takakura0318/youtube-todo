@@ -1,10 +1,21 @@
-import React from "react";
+import axios from "axios";
+import React, { useEffect } from "react";
 import { BrowserRouter, Switch, Route, Link } from "react-router-dom";
 import { HelpPage } from "./components/pages/help/HelpPage";
 import { LoginPage } from "./components/pages/login/LoginPage";
 import { TaskPage } from "./components/pages/tasks/TaskPage";
 
 export const Router = () => {
+    useEffect(() => {
+        axios
+            .post("/api/login", {
+                email: "yamada@example.com",
+                password: "123456789",
+            })
+            .then((response) => {
+                console.log(response);
+            });
+    }, []);
     return (
         <BrowserRouter>
             <div>

@@ -14,11 +14,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-// Task一覧取得
-Route::apiResource('tasks','TaskController');
-// Task is_done 更新
-Route::patch('tasks/update-done/{task}','TaskController@updateDone');
+//
+Route::post("login", "LoginController@login");
+Route::post("logout", "LoginController@logout");
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// 認証成功した場合のみアクセスできるルートをグループ化
+Route::group(['middleware' => "auth:sanctum"], function() {
+    // Task一覧取得
+    Route::apiResource('tasks','TaskController');
+    // Task is_done 更新
+    Route::patch('tasks/update-done/{task}','TaskController@updateDone');
+    Route::get('user', function (Request $request) {
+        return $request->user();
+    });
+
 });
+
+
+
