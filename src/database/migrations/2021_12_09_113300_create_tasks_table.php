@@ -17,6 +17,7 @@ class CreateTasksTable extends Migration
             $table->id();
             $table->string('title'); // 「タイトル」カラム
             $table->boolean('is_done')->default(false); // 「タスクの完了を管理する」カラム
+            $table->foreignId('user_id')->constrained(); // Usersテーブルと関連付ける(FK付与)
             $table->timestamps();
         });
     }

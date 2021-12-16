@@ -13,7 +13,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(TaskSeeder::class);
+        // TaskテーブルはUserテーブルを参照しているのでUserテーブルを先にcreateする必要がある
         $this->call(UserSeeder::class);
+        $this->call(TaskSeeder::class);
     }
 }

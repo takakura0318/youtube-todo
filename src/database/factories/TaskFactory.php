@@ -14,11 +14,14 @@ class TaskFactory extends Factory
      */
     public function definition()
     {
+        $user_id = $this->faker->numberBetween(1,3);
         return [
-            // 「title」カラムにランダムな文字列15~40字を生成
-            'title' => $this->faker->realText(rand(15,40)),
+            // データ整形 &&「title」カラムにランダムな文字列15~40字を生成
+            'title' => $user_id . ':'. $this->faker->realText(rand(15,40)),
             // 「is_done」カラムに10%の確率でtrueを生成
             'is_done' => $this->faker->boolean(10),
+            // 「user_id」カラムに1~3のどれかを生成
+            'user_id' => $user_id ,
             'created_at' => now(),
             'updated_at' => now()
         ];

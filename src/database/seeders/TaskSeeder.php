@@ -14,7 +14,7 @@ class TaskSeeder extends Seeder
      */
     public function run()
     {
-        // 「Task」テーブルに10件データを登録する
-        Task::factory()->count(10)->create();
+        // 「Task」テーブルに20件データを登録する
+        Task::factory()->count(20)->create();
     }
 }

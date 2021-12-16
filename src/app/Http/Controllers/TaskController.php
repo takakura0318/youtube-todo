@@ -5,9 +5,20 @@ namespace App\Http\Controllers;
 use App\Http\Requests\TaskRequest;
 use Illuminate\Http\Request;
 use App\Models\Task;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
+    public function __construct()
+    {
+        // 自分のタスクだけ、編集や削除をできるようにする
+        // index()メソッドでUserテーブルに紐付いたTaskしか表示されないような仕様となっているが万が一に備えて
+        $this->middleware('can:checkUser, task')->only([
+            // 適用範囲をメソッド単位で指定
+            'updateDone','update','destroy'
+        ]);
+        
+    }
     /**
      * Task一覧
      *
@@ -15,8 +26,10 @@ class TaskController extends Controller
      */
     public function index()
     {
-        // Taskテーブルを降順(高い順)で全件取得
-        return Task::orderByDesc('id')->get();
+        // テスト用
+        //return Task::orderByDesc('id')->get();
+        // Usersテーブルに紐付いたTaskテーブルを降順(高い順)で取得
+        return Task::where('user_id',Auth::id())->orderByDesc('id')->get();
     }
 
     /**
@@ -27,6 +40,11 @@ class TaskController extends Controller
      */
     public function store(TaskRequest $request)
     {
+        // リクエストをサーバー側で追加
+        $request->merge([
+            'user_id' => Auth::id()
+        ]);
+
         $task = Task::create($request->all());
 
         // 登録成功時は、正常ステータスコード201、失敗した場合は、ステータスコード500を返す
